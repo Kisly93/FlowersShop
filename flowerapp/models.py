@@ -105,6 +105,7 @@ class Bouquet (models.Model):
     packaging = models.ForeignKey(
         Packaging,
         on_delete=models.SET_NULL,
+        blank=True,
         null=True,
         related_name='bouquets',
         verbose_name='упаковка'
@@ -113,6 +114,7 @@ class Bouquet (models.Model):
     ribbon = models.ForeignKey(
         Ribbon,
         on_delete=models.SET_NULL,
+        blank=True,
         null=True,
         related_name='bouquets',
         verbose_name='лента'

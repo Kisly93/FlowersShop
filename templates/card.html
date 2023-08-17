@@ -8,29 +8,29 @@
 		<div class="container">
 			<div class="card ficb">
 				<div class="card__block card__block_first">
-					<img src="{% static 'img/cardImg.jpg' %}" alt="img" class="card__img">
+					<img src="{{ bouquet.image.url }}" alt="img" class="card__img">
 				</div>
 				<div class="card__block card__block_sec">
-					<div class="title">Летнее утро</div>
-					<div class="card__block_price">3 600 руб</div>
+					<div class="title">{{ bouquet.name }}</div>
+					<div class="card__block_price">{{ bouquet.price }} руб</div>
 					<div class="card__elems ">
 						<span class="card__elems_intro">Состав</span>
 						<div class="card__items">
+							{% for bouquet_item in bouquet_items %}
 							<span class="card_items_intro">
-								Гортензия розовая - 1 шт.
+								{{ bouquet_item.flower.name|title }} - {{ bouquet_item.quantity}} шт.
 							</span>
+							{% endfor %}
+							{% if bouquet.packaging %}
 							<span class="card_items_intro">
-								Ветки эквалипта - 5 шт.
+								Упаковка: {{ bouquet.packaging }}
 							</span>
+							{% endif %}
+							{% if bouquet.ribbon %}
 							<span class="card_items_intro">
-								Гипсофила - 1 шт.
+								Лента: {{ bouquet.ribbon }}
 							</span>
-							<span class="card_items_intro">
-								Матовая упаковка - 1 шт.
-							</span>
-							<span class="card_items_intro">
-								Лента атласная - 1 шт.
-							</span>
+							{% endif %}
 							<span class="card_items_intro">
 								Рекомендация по уходу - 1 шт.
 							</span>
@@ -53,7 +53,10 @@
 							</span>
 						</div>
 					</div>
-					<button class="btn largeBtn card__btn" onclick="window.location.href='{% url 'order' %}'">Заказать букет</button>
+					<form method="post" action="{% url 'order' %}">
+						{% csrf_token %}
+						<button value="{{ bouquet.pk }}" name="make_order" class="btn largeBtn card__btn">Заказать букет</button>
+					</form>
 				</div>
 			</div>
 		</div>

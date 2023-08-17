@@ -15,9 +15,14 @@ def catalog(request):
 
 
 def card(request):
-    # print(request.GET)
-    # print(request.content_params)
-    return render(request, 'card.html', {})
+    bouquet = Bouquet.objects.filter(pk=int(request.POST.get("select_bouquet"))).first()
+    bouquet_items = BouquetItem.objects.filter(bouquet=bouquet)
+    # здесь конструкция bouquet_items = bouquet.bouquet_items почему то не передается в шаблон как QuerySet
+    context = {
+        'bouquet': bouquet,
+        'bouquet_items': bouquet_items,
+    }
+    return render(request, 'card.html', context=context)
 
 
 def consultation(request):
@@ -25,6 +30,7 @@ def consultation(request):
 
 
 def order(request):
+    print(request.POST.get('make_order'))
     return render(request, 'order.html', {})
 
 
