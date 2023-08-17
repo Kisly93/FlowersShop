@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions, action
 from .models import Bouquet, Flower, BouquetItem, Packaging, Ribbon, Client, Order
+from .functions import update_price
 
 
 class BouquetItemInline(admin.TabularInline):
@@ -11,35 +12,6 @@ class BouquetItemInline(admin.TabularInline):
 
 @admin.register(Bouquet)
 class BouquetAdmin(DjangoObjectActions, admin.ModelAdmin):
-
-    @action(label='Обновить цены букетов', description='Обновить цены по всем букетам, у которых не стоит '
-                                                       'запрет на обновление')
-    def update_price(self, request, obj):
-        bouquets = Bouquet.objects.all()
-        for bouquet in bouquets:
-            if not bouquet.dont_update_price:
-                bouquet_items = bouquet.bouquet_items
-                bouquet_price = 0
-                for bouquet_item in bouquet_items.values():
-                    bouquet_price += Flower.objects.filter(pk=bouquet_item["flower_id"])[0].price * bouquet_item["quantity"]
-                bouquet.price = bouquet_price
-                bouquet.save()
-
-    changelist_actions = ('update_price', )
-
-    def admin_image(self, obj):
-        if obj.image:
-            return format_html(
-                f'''<a href="{obj.image.url}" target="_blank">
-                  <img src="{obj.image.url}" alt="{obj.image}" 
-                    width="50" height="50" style="object-fit: cover;"/></a>
-                ''')
-
-    admin_image.allow_tags = True
-
-    search_fields = [
-        'category',
-    ]
 
     list_display = (
         'name',
@@ -56,6 +28,44 @@ class BouquetAdmin(DjangoObjectActions, admin.ModelAdmin):
         'category',
         'dont_update_price',
     ]
+
+    search_fields = [
+        'category',
+    ]
+
+    @action(label='Обновить цены букетов', description='Обновить цены по всем букетам, у которых не стоит '
+                                                       'запрет на обновление')
+    def update_all_prices(self, request, obj):
+        bouquets = Bouquet.objects.all()
+        for bouquet in bouquets:
+            update_price(bouquet)
+
+    changelist_actions = ('update_all_prices', )
+
+    def admin_image(self, obj):
+        if obj.image:
+            return format_html(
+                f'''<a href="{obj.image.url}" target="_blank">
+                  <img src="{obj.image.url}" alt="{obj.image}" 
+                    width="50" height="50" style="object-fit: cover;"/></a>
+                ''')
+
+    admin_image.allow_tags = True
+
+    def save_model(self, request, obj, form, change):
+        update_price(obj)
+        super().save_model(request, obj, form, change)
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        try:
+            bouquet = instances[0].bouquet
+            for instance in instances:
+                instance.save()
+            formset.save_m2m()
+            update_price(bouquet)
+        except IndexError:
+            pass
 
     def flowers(self, row):
         return ', '.join([bouquet_item.flower.name for bouquet_item in row.bouquet_items.select_related('flower').all()])
