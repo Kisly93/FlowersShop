@@ -15,6 +15,8 @@ def catalog(request):
 
 
 def card(request):
+    print(request.GET)
+    print(request.content_params)
     return render(request, 'card.html', {})
 
 
