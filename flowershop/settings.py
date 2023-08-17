@@ -23,7 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'flowerapp.apps.FlowerappConfig'
+    'flowerapp.apps.FlowerappConfig',
+    'phonenumber_field',
+    'django_object_actions',
 ]
 
 MIDDLEWARE = [
