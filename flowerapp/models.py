@@ -143,6 +143,21 @@ class Bouquet (models.Model):
         max_length=500,
     )
 
+    price = models.IntegerField(
+        'Цена',
+        default=0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(10000),
+        ]
+    )
+
+    dont_update_price = models.BooleanField(
+        'Не обновлять цену',
+        default=False,
+        db_index=True,
+    )
+
     class Meta:
         verbose_name = 'букет'
         verbose_name_plural = 'букеты'
