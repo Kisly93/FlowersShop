@@ -1,1 +1,6 @@
 Django~=3.2.10
+environs[django]==9.3.2
+phonenumberslite==8.13.7
+django-phonenumber-field==7.1.0
+requests==2.31.0
+pillow==10.0.*
