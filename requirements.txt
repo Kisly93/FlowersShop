@@ -1,6 +1,7 @@
-Django~=3.2.10
-environs[django]==9.3.2
-phonenumberslite==8.13.7
-django-phonenumber-field==7.1.0
-requests==2.31.0
+Django~=3.2.*
+environs[django]==9.3.*
+phonenumberslite==8.13.*
+django-phonenumber-field==7.1.*
+requests==2.31.*
 pillow==10.0.*
+django-object-actions==4.1.*

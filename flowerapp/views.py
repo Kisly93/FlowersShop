@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Bouquet, BouquetItem, Flower
 
 
 def index(request):
@@ -6,10 +7,16 @@ def index(request):
 
 
 def catalog(request):
-    return render(request, 'catalog.html', {})
+    bouquets = Bouquet.objects.all()
+    context = {
+        'bouquets': bouquets,
+    }
+    return render(request, "catalog.html", context=context)
 
 
 def card(request):
+    # print(request.GET)
+    # print(request.content_params)
     return render(request, 'card.html', {})
 
 
