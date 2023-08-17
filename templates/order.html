@@ -11,42 +11,45 @@
 				<div class="order__block">
 					<div class="order_items">
 						<div class="title">Оформление доставки</div>
-						<form action="#" class="order__form">
+						<form method="post" action="{% url 'order-step' %}" class="order__form">
+							{% csrf_token %}
 							<div class="order__form_block ficb">
-								<input type="text" name="fname" class="order__form_input" placeholder="Введите Имя" required>
-								<input type="text" name="tel" class="order__form_input" placeholder="+ 7 (999) 000 00 00" required>
-								<input type="text" name="adres" class="order__form_input" placeholder="Адрес доставки" required>
+								<input type="text" name="fname" class="order__form_input" style="margin-right: 30px; width: 100%;" placeholder="Введите Имя" required>
+								<input type="text" name="tel" class="order__form_input" style="width: 100%;" placeholder="+ 7 (999) 000 00 00" required>
 							</div>
-							<div class="order__form_btns fic">
+							<div class="order__form_block ficb" >
+								<input type="text" name="adress" class="order__form_input" style="width: 100%;" placeholder="Адрес доставки" required>
+							</div>
+							<div class="order__form_btns fic" style="justify-content: center;">
 								<div class="order__form_radioBlock ">
-									<input type="radio" name="orderTime" id="radio1" value="Как можно скорее" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio1" value="URGENT" class="order__form_radio" />
 									<label for="radio1" class="radioLable">Как можно скорее</label>
 								</div>
 								<div class="order__form_radioBlock">
-									<input type="radio" name="orderTime" id="radio2" value="с 10:00 до 12:00" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio2" value="t10_12" class="order__form_radio" />
 									<label for="radio2" class="radioLable">с 10:00 до 12:00</label>
 								</div>
 								<div class="order__form_radioBlock">
-									<input type="radio" name="orderTime" id="radio3" value="с 12:00 до 14:00" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio3" value="t12_14" class="order__form_radio" />
 									<label for="radio3" class="radioLable">с 12:00 до 14:00</label>
 								</div>
 								<div class="order__form_radioBlock">
-									<input type="radio" name="orderTime" id="radio4" value="с 14:00 до 16:00" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio4" value="t14_16" class="order__form_radio" />
 									<label for="radio4" class="radioLable">с 14:00 до 16:00</label>
 								</div>
 								<div class="order__form_radioBlock">
-									<input type="radio" name="orderTime" id="radio5" value="с 16:00 до 18:00" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio5" value="t16_18" class="order__form_radio" />
 									<label for="radio5" class="radioLable">с 16:00 до 18:00</label>
 								</div>
 								<div class="order__form_radioBlock">
-									<input type="radio" name="orderTime" id="radio6" value="с 18:00 до 20:00" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio6" value="t18_20" class="order__form_radio" />
 									<label for="radio6" class="radioLable">с 18:00 до 20:00</label>
 								</div>
 								
 							</div>
 							<div class="order__form_line"></div>
 							<div class="order__form_btns ficb">
-								<button class="btn order__form_pay" onclick="window.location.href='{% url 'order-step' %}'">Оплатить</button>
+								<button class="btn order__form_pay" name="bouquet_pk" value="{{ bouquet_pk }}">Оплатить</button>
 								<button class="btn order__form_btn" onclick="window.location.href='{% url 'catalog' %}'">Назад</button>
 							</div>
 						</form>

@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from .models import Bouquet, BouquetItem, Flower
+from phonenumber_field.phonenumber import PhoneNumber
+from django.http import HttpResponse
+from .models import Bouquet, BouquetItem, Order, Client
 
 
 def index(request):
@@ -30,11 +32,28 @@ def consultation(request):
 
 
 def order(request):
-    print(request.POST.get('make_order'))
-    return render(request, 'order.html', {})
+    context = {
+        'bouquet_pk': request.POST.get('make_order'),
+    }
+    return render(request, 'order.html', context=context)
 
 
 def order_step(request):
+    serialized_phone = PhoneNumber.from_string(request.POST.get('tel'), region='RU').as_e164
+    client, client_created = Client.objects.get_or_create(
+        phone_number=serialized_phone,
+        defaults={'name': request.POST.get('fname')},
+    )
+
+    bouquet = Bouquet.objects.get(pk=request.POST.get('bouquet_pk'))
+    order = Order(
+        client=client,
+        address=request.POST.get('adress'),
+        delivery_time=request.POST.get('orderTime'),
+        cost=bouquet.price,
+    )
+    order.save()
+    order.bouquet.add(bouquet)
     return render(request, 'order-step.html', {})
 
 
