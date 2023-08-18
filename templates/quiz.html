@@ -16,12 +16,12 @@
 				</div>
 				<div class="quiz__block">
 					<h1 class="quiz__title">К какому событию нужен букет?</h1>
-					<div class="quiz__elems fic">
-						<a href="{% url 'quiz-step' %}" class="quiz__elem">Свадьба</a>
-						<a href="{% url 'quiz-step' %}" class="quiz__elem">День рождения</a>
-						<a href="{% url 'quiz-step' %}" class="quiz__elem">Без повода</a>
-					</div>
-
+					<form method="post" action="{% url 'quiz-step' %}" class="quiz__elems fic">
+						{% csrf_token %}
+						<button class="quiz__elem" name="category" value="WEDDING">Свадьба</button>
+						<button class="quiz__elem" name="category" value="BIRTHDAY_PARTY">День рождения</button>
+						<button class="quiz__elem" name="category" value="WHATEVER">Без повода</button>
+					</form>
 					<div class="quiz__progress">
 						<div class="quiz__progress_step">
 							<span class="quiz__progress_num">1</span>
@@ -33,7 +33,6 @@
 						</div>
 					</div>
 				</div>
-				
 			</div>
 		</div>
 	</section>

@@ -16,15 +16,16 @@
 				</div>
 				<div class="quiz__block">
 					<h1 class="quiz__title">На какой бюджет рассчитываете?</h1>
-					<div class="quiz__elems fic">
-						<a href="{% url 'result' %}" class="quiz__elem">До 1 000 руб</a>
-						<a href="{% url 'result' %}" class="quiz__elem">1 000 - 5 000 руб</a>
-						<a href="{% url 'result' %}" class="quiz__elem">от 5 000 руб</a>
-						<a href="{% url 'result' %}" class="quiz__elem">Не имеет значения</a>
-					</div>
+					<form method="post" action="{% url 'result' %}" class="quiz__elems fic">
+						{% csrf_token %}
+						<button class="quiz__elem" name="price" value="1-999">До 1 000 руб</button>
+						<button class="quiz__elem" name="price" value="1000-5000">1 000 - 5 000 руб</button>
+						<button class="quiz__elem" name="price" value="5001-999999">от 5 000 руб</button>
+						<button class="quiz__elem" name="price" value="">Не имеет значения</button>
+					</form>
 					<div class="quiz__progress">
 						<div class="quiz__progress_step">
-							<span class="quiz__progress_num">1</span>
+							<span class="quiz__progress_num">2</span>
 							<span class="quiz__progress_in"> шаг из </span>
 							<span class="quiz__progress_num">2</span>
 						</div>

@@ -15,7 +15,8 @@
 						{% for bouquet in bouquets %}
 						<div class="recommended__block" style="flex-direction: column !important;">
 							<button value="{{ bouquet.pk }}" name="select_bouquet"
-									style="background: url({{ bouquet.image.url }}) no-repeat center bottom / cover; width: 100%; height: 100%; border: 0px;"></button>
+									style="background: url({{ bouquet.image.url }}) no-repeat center bottom / cover; width: 100%; height: 100%; border: 0px;">
+							</button>
 								<div class="recommended__block_elems ficb">
 									<span class="recommended__block_intro">{{ bouquet.name }}</span>
 									<span class="recommended__block_price">{{ bouquet.price }} руб</span>
