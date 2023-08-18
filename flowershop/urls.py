@@ -16,5 +16,7 @@ urlpatterns = [
     path('quiz/', views.quiz, name='quiz'),
     path('quiz-step/', views.quiz_step, name='quiz-step'),
     path('result/', views.result, name='result'),
+    path('process-payment/', views.process_payment, name='process_payment'),
+
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
