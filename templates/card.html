@@ -45,12 +45,16 @@
 					<div class="card__elems ">
 						<span class="card__elems_intro">Размер</span>
 						<div class="card__items">
+							{% if bouquet.height %}
 							<span class="card_items_intro">
-								Высота - 50 см
+								Высота - {{ bouquet.height }} см
 							</span>
+							{% endif %}
+							{% if bouquet.width %}
 							<span class="card_items_intro">
-								Ширина - 30 см
+								Ширина - {{ bouquet.width }} см
 							</span>
+							{% endif %}
 						</div>
 					</div>
 					<form method="post" action="{% url 'order' %}">

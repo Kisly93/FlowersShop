@@ -132,6 +132,28 @@ class Bouquet (models.Model):
         max_length=30
     )
 
+    height = models.IntegerField(
+        'высота, см',
+        default=0,
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(200),
+        ]
+    )
+
+    width = models.IntegerField(
+        'ширина, см',
+        default=0,
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ]
+    )
+
     image = models.ImageField(
         'изображение букета',
         null=True,
