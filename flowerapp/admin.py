@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions, action
 from .models import Bouquet, Flower, BouquetItem, Packaging, Ribbon, Client, Order
+from rangefilter.filters import NumericRangeFilterBuilder
 from .functions import update_price
 
 
@@ -19,6 +20,8 @@ class BouquetAdmin(DjangoObjectActions, admin.ModelAdmin):
         'packaging',
         'ribbon',
         'category',
+        'height',
+        'width',
         'price',
         'dont_update_price',
         'admin_image',
@@ -27,10 +30,13 @@ class BouquetAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_filter = [
         'category',
         'dont_update_price',
+        ('height', NumericRangeFilterBuilder()),
+        ('width', NumericRangeFilterBuilder()),
     ]
 
     search_fields = [
         'category',
+        'name',
     ]
 
     @action(label='Обновить цены букетов', description='Обновить цены по всем букетам, у которых не стоит '
@@ -49,7 +55,6 @@ class BouquetAdmin(DjangoObjectActions, admin.ModelAdmin):
                   <img src="{obj.image.url}" alt="{obj.image}" 
                     width="50" height="50" style="object-fit: cover;"/></a>
                 ''')
-
     admin_image.allow_tags = True
 
     def save_model(self, request, obj, form, change):

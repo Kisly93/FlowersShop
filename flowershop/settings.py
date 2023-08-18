@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'flowerapp.apps.FlowerappConfig',
     'phonenumber_field',
     'django_object_actions',
+    'rangefilter',
 ]
 
 MIDDLEWARE = [
