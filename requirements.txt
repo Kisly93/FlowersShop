@@ -6,3 +6,4 @@ requests==2.31.*
 pillow==10.0.*
 django-object-actions==4.1.*
 django-admin-rangefilter==0.10.*
+stripe==6.0.*
