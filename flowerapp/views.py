@@ -1,4 +1,5 @@
 import random
+import telegram
 
 from django.shortcuts import render
 from phonenumber_field.phonenumber import PhoneNumber
@@ -12,6 +13,8 @@ from environs import Env
 
 env = Env()
 stripe.api_key = env('STRIPE_API_KEY')
+telegram_owner_id = env('TELEGRAM_OWNER_ID')
+bot = telegram.Bot(token=env('TELEGRAM_TOKEN'))
 
 
 def process_payment(request):
@@ -92,6 +95,18 @@ def order_step(request):
     )
     order.save()
     order.bouquet.add(bouquet)
+
+    messgae_to_owner = f'''
+        В магазине сделан заказ:
+        букет: {bouquet.name},
+        сумма: {order.cost},
+        адрес доставки: {order.address},
+        время доставки: {Order.DeliveryTime(order.delivery_time).label},
+        клиент: {client.name},
+        телефон: {client.phone_number}        
+    '''
+    bot.send_message(telegram_owner_id, messgae_to_owner)
+
     request.session['order_pk'] = order.pk
     request.session['order_cost'] = order.cost
     return render(request, 'order-step.html', {'order_cost': order.cost})
