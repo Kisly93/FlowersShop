@@ -7,7 +7,11 @@ from .models import Bouquet, BouquetItem, Order, Client
 import stripe
 from django.shortcuts import render
 from django.http import JsonResponse
-stripe.api_key = "sk_test_51NgQ5TE6lrzSQB6jSOLNM5nMlQWgKbZmsBAx8wvY6aJynJZdibHWvYwMdwDfpClWAzmFAMNfSgU7nNLQGNhPAzxk00OwkJ74La"
+from environs import Env
+
+
+env = Env()
+stripe.api_key = env('STRIPE_API_KEY')
 
 
 def process_payment(request):
@@ -15,7 +19,7 @@ def process_payment(request):
         email = request.POST.get('mail', '')
         payment_success = False
         payment_failed = False
-        order_cost = 0
+
         try:
             order_cost = request.session.get('order_cost', 0)
             charge = stripe.Charge.create(
@@ -30,6 +34,11 @@ def process_payment(request):
             payment_failed = True
         except stripe.error.StripeError as e:
             payment_failed = True
+
+        if payment_success:
+            order = Order.objects.get(pk=request.session.get('order_pk', 0))
+            order.payed = True
+            order.save()
 
         context = {
             'payment_success': payment_success,
@@ -81,6 +90,7 @@ def order_step(request):
     )
     order.save()
     order.bouquet.add(bouquet)
+    request.session['order_pk'] = order.pk
     request.session['order_cost'] = order.cost
     return render(request, 'order-step.html', {'order_cost': order.cost})
 

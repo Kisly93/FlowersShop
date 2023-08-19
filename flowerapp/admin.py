@@ -73,7 +73,8 @@ class BouquetAdmin(DjangoObjectActions, admin.ModelAdmin):
             pass
 
     def flowers(self, row):
-        return ', '.join([bouquet_item.flower.name for bouquet_item in row.bouquet_items.select_related('flower').all()])
+        return ', '.join([f'{bouquet_item.flower.name} {bouquet_item.quantity}шт'
+                          for bouquet_item in row.bouquet_items.select_related('flower').all()])
     flowers.short_description = 'Цветы'
 
     inlines = [
@@ -95,6 +96,7 @@ class OrderAdmin(admin.ModelAdmin):
         'address',
         'delivery_time',
         'status',
+        'payed',
     )
 
     def bouquets(self, row):
