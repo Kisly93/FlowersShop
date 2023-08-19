@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
+
+<title>{% block title %}Flower Shop - Консультация{% endblock %}</title>
+	{% block content %}
+	<section id="singUpConsultation">
+		<div class="container">
+			<div class="singUpConsultation">
+				<div class="singUpConsultation__form">
+					<p class="title">Заявка получена</p>
+					<p class="banner__text">
+						{{ client_name }}, спасибо за заявку на консультацию.<br>
+						В ближайшее время телефону {{ phone_number }} свяжется наш менеджер.
+					</p>
+					<button class="btn banner__btn" onclick="window.location.href='{% url 'index' %}'">На главную</button>
+					<div class="blockImgHiden"></div>
+				</div>
+			</div>
+		</div>
+		<img src="{% static 'img/singUpConsultationImg.jpg' %}" alt="singUpConsultationImg" class="singUpConsultation__img">
+	</section>
+	{% endblock %}
