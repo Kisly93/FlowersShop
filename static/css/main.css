@@ -166,7 +166,7 @@ transform: translateX(50%);
     align-items: end;
 	width: 398px;
 	height: 400px;
-	margin-right: 9px;
+	margin-right: 7px;
 }
 .recommended__block:last-child {
 	margin-right: 0;
@@ -333,6 +333,13 @@ opacity: 0.3;
 } */
 .catalog__block .recommended__elems {
 	margin-bottom: 10px;
+	display: flex;
+    flex-wrap: wrap;
+
+    flex-basis: 10%;
+    display: flex;
+    justify-content: center;
+
 }
 .recommended__elems_first .recommended__block_sec {
 	background: url('../img/catalog/catalogBg1.jpg') no-repeat center bottom / cover;
