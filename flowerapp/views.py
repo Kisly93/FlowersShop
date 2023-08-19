@@ -49,20 +49,22 @@ def process_payment(request):
 
 
 def index(request):
+    request.session.clear()
     selected_bouquets = list(Bouquet.objects.all())
     random_selected_bouquets = random.sample(selected_bouquets, k=3)
     return render(request, 'index.html', {'bouquets': random_selected_bouquets})
 
 
 def catalog(request):
+    request.session.clear()
     bouquets = Bouquet.objects.all()
     return render(request, "catalog.html", {'bouquets': bouquets})
 
 
 def card(request):
     bouquet = Bouquet.objects.get(pk=int(request.POST.get("select_bouquet")))
+    request.session['bouquet_pk'] = bouquet.pk
     bouquet_items = BouquetItem.objects.filter(bouquet=bouquet)
-    # здесь конструкция bouquet_items = bouquet.bouquet_items почему то не передается в шаблон как QuerySet
     return render(request, 'card.html', {'bouquet': bouquet, 'bouquet_items': bouquet_items})
 
 
@@ -71,7 +73,7 @@ def consultation(request):
 
 
 def order(request):
-    return render(request, 'order.html', {'bouquet_pk': request.POST.get('make_order')})
+    return render(request, 'order.html', {'bouquet_pk': request.session.get('bouquet_pk', 0)})
 
 
 def order_step(request):
@@ -81,7 +83,7 @@ def order_step(request):
         defaults={'name': request.POST.get('fname')},
     )
 
-    bouquet = Bouquet.objects.get(pk=request.POST.get('bouquet_pk'))
+    bouquet = Bouquet.objects.get(pk=request.session.get('bouquet_pk', 0))
     order = Order(
         client=client,
         address=request.POST.get('adress'),
