@@ -1,4 +1,5 @@
 import random
+import telegram
 
 from django.shortcuts import render
 from phonenumber_field.phonenumber import PhoneNumber
@@ -7,7 +8,15 @@ from .models import Bouquet, BouquetItem, Order, Client
 import stripe
 from django.shortcuts import render
 from django.http import JsonResponse
-stripe.api_key = "sk_test_51NgQ5TE6lrzSQB6jSOLNM5nMlQWgKbZmsBAx8wvY6aJynJZdibHWvYwMdwDfpClWAzmFAMNfSgU7nNLQGNhPAzxk00OwkJ74La"
+from environs import Env
+
+
+env = Env()
+stripe.api_key = env('STRIPE_API_KEY')
+telegram_owner_id = env('TELEGRAM_OWNER_ID')
+bot = telegram.Bot(token=env('TELEGRAM_TOKEN'))
+
+
 def process_payment(request):
     if request.method == 'POST':
         email = request.POST.get('mail', '')
@@ -15,9 +24,9 @@ def process_payment(request):
         payment_failed = False
 
         try:
-            bouquet_amount = request.session.get('bouquet_amount', 0)
+            order_cost = request.session.get('order_cost', 0)
             charge = stripe.Charge.create(
-                amount=bouquet_amount * 100,
+                amount=order_cost * 100,
                 currency="usd",
                 source="tok_visa",  # Используем тестовый токен
                 description="Оплата заказа",
@@ -29,34 +38,37 @@ def process_payment(request):
         except stripe.error.StripeError as e:
             payment_failed = True
 
+        if payment_success:
+            order = Order.objects.get(pk=request.session.get('order_pk', 0))
+            order.payed = True
+            order.save()
+
         context = {
             'payment_success': payment_success,
             'payment_failed': payment_failed,
-            'bouquet_amount': bouquet_amount,
+            'order_cost': order_cost,
         }
         return render(request, 'order-step.html', context)
 
+
 def index(request):
-    return render(request, 'index.html', {})
+    request.session.clear()
+    selected_bouquets = list(Bouquet.objects.all())
+    random_selected_bouquets = random.sample(selected_bouquets, k=3)
+    return render(request, 'index.html', {'bouquets': random_selected_bouquets})
 
 
 def catalog(request):
+    request.session.clear()
     bouquets = Bouquet.objects.all()
-    context = {
-        'bouquets': bouquets,
-    }
-    return render(request, "catalog.html", context=context)
+    return render(request, "catalog.html", {'bouquets': bouquets})
 
 
 def card(request):
     bouquet = Bouquet.objects.get(pk=int(request.POST.get("select_bouquet")))
+    request.session['bouquet_pk'] = bouquet.pk
     bouquet_items = BouquetItem.objects.filter(bouquet=bouquet)
-    # здесь конструкция bouquet_items = bouquet.bouquet_items почему то не передается в шаблон как QuerySet
-    context = {
-        'bouquet': bouquet,
-        'bouquet_items': bouquet_items,
-    }
-    return render(request, 'card.html', context=context)
+    return render(request, 'card.html', {'bouquet': bouquet, 'bouquet_items': bouquet_items})
 
 
 def consultation(request):
@@ -64,10 +76,7 @@ def consultation(request):
 
 
 def order(request):
-    context = {
-        'bouquet_pk': request.POST.get('make_order'),
-    }
-    return render(request, 'order.html', context=context)
+    return render(request, 'order.html', {'bouquet_pk': request.session.get('bouquet_pk', 0)})
 
 
 def order_step(request):
@@ -77,7 +86,7 @@ def order_step(request):
         defaults={'name': request.POST.get('fname')},
     )
 
-    bouquet = Bouquet.objects.get(pk=request.POST.get('bouquet_pk'))
+    bouquet = Bouquet.objects.get(pk=request.session.get('bouquet_pk', 0))
     order = Order(
         client=client,
         address=request.POST.get('adress'),
@@ -86,12 +95,21 @@ def order_step(request):
     )
     order.save()
     order.bouquet.add(bouquet)
-    context = {
-        'bouquet_amount': order.cost,
-    }
-    request.session['bouquet_amount'] = order.cost
-    return render(request, 'order-step.html', context)
 
+    messgae_to_owner = f'''
+        В магазине сделан заказ:
+        букет: {bouquet.name},
+        сумма: {order.cost},
+        адрес доставки: {order.address},
+        время доставки: {Order.DeliveryTime(order.delivery_time).label},
+        клиент: {client.name},
+        телефон: {client.phone_number}        
+    '''
+    bot.send_message(telegram_owner_id, messgae_to_owner)
+
+    request.session['order_pk'] = order.pk
+    request.session['order_cost'] = order.cost
+    return render(request, 'order-step.html', {'order_cost': order.cost})
 
 
 def quiz(request):
@@ -135,10 +153,4 @@ def result(request):
             random_selected_bouquet = random.choice(selected_bouquets)
 
     bouquet_items = BouquetItem.objects.filter(bouquet=random_selected_bouquet)
-
-    context = {
-        'bouquet': random_selected_bouquet,
-        'bouquet_items': bouquet_items,
-    }
-
-    return render(request, 'result.html', context=context)
+    return render(request, 'result.html', {'bouquet': random_selected_bouquet, 'bouquet_items': bouquet_items})

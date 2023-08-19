@@ -57,10 +57,7 @@
 							{% endif %}
 						</div>
 					</div>
-					<form method="post" action="{% url 'order' %}">
-						{% csrf_token %}
-						<button value="{{ bouquet.pk }}" name="make_order" class="btn largeBtn card__btn">Заказать букет</button>
-					</form>
+					<button class="btn largeBtn card__btn" onclick="window.location.href='{% url 'order' %}'">Заказать букет</button>
 				</div>
 			</div>
 		</div>

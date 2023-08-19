@@ -313,6 +313,11 @@ class Order(models.Model):
         ]
     )
 
+    payed = models.BooleanField(
+        'Оплачен?',
+        default=False
+    )
+
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
