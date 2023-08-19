@@ -8,16 +8,18 @@ import stripe
 from django.shortcuts import render
 from django.http import JsonResponse
 stripe.api_key = "sk_test_51NgQ5TE6lrzSQB6jSOLNM5nMlQWgKbZmsBAx8wvY6aJynJZdibHWvYwMdwDfpClWAzmFAMNfSgU7nNLQGNhPAzxk00OwkJ74La"
+
+
 def process_payment(request):
     if request.method == 'POST':
         email = request.POST.get('mail', '')
         payment_success = False
         payment_failed = False
-
+        order_cost = 0
         try:
-            bouquet_amount = request.session.get('bouquet_amount', 0)
+            order_cost = request.session.get('order_cost', 0)
             charge = stripe.Charge.create(
-                amount=bouquet_amount * 100,
+                amount=order_cost * 100,
                 currency="usd",
                 source="tok_visa",  # Используем тестовый токен
                 description="Оплата заказа",
@@ -32,31 +34,27 @@ def process_payment(request):
         context = {
             'payment_success': payment_success,
             'payment_failed': payment_failed,
-            'bouquet_amount': bouquet_amount,
+            'order_cost': order_cost,
         }
         return render(request, 'order-step.html', context)
 
+
 def index(request):
-    return render(request, 'index.html', {})
+    selected_bouquets = list(Bouquet.objects.all())
+    random_selected_bouquets = random.sample(selected_bouquets, k=3)
+    return render(request, 'index.html', {'bouquets': random_selected_bouquets})
 
 
 def catalog(request):
     bouquets = Bouquet.objects.all()
-    context = {
-        'bouquets': bouquets,
-    }
-    return render(request, "catalog.html", context=context)
+    return render(request, "catalog.html", {'bouquets': bouquets})
 
 
 def card(request):
     bouquet = Bouquet.objects.get(pk=int(request.POST.get("select_bouquet")))
     bouquet_items = BouquetItem.objects.filter(bouquet=bouquet)
     # здесь конструкция bouquet_items = bouquet.bouquet_items почему то не передается в шаблон как QuerySet
-    context = {
-        'bouquet': bouquet,
-        'bouquet_items': bouquet_items,
-    }
-    return render(request, 'card.html', context=context)
+    return render(request, 'card.html', {'bouquet': bouquet, 'bouquet_items': bouquet_items})
 
 
 def consultation(request):
@@ -64,10 +62,7 @@ def consultation(request):
 
 
 def order(request):
-    context = {
-        'bouquet_pk': request.POST.get('make_order'),
-    }
-    return render(request, 'order.html', context=context)
+    return render(request, 'order.html', {'bouquet_pk': request.POST.get('make_order')})
 
 
 def order_step(request):
@@ -86,12 +81,8 @@ def order_step(request):
     )
     order.save()
     order.bouquet.add(bouquet)
-    context = {
-        'bouquet_amount': order.cost,
-    }
-    request.session['bouquet_amount'] = order.cost
-    return render(request, 'order-step.html', context)
-
+    request.session['order_cost'] = order.cost
+    return render(request, 'order-step.html', {'order_cost': order.cost})
 
 
 def quiz(request):
@@ -135,10 +126,4 @@ def result(request):
             random_selected_bouquet = random.choice(selected_bouquets)
 
     bouquet_items = BouquetItem.objects.filter(bouquet=random_selected_bouquet)
-
-    context = {
-        'bouquet': random_selected_bouquet,
-        'bouquet_items': bouquet_items,
-    }
-
-    return render(request, 'result.html', context=context)
+    return render(request, 'result.html', {'bouquet': random_selected_bouquet, 'bouquet_items': bouquet_items})

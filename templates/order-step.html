@@ -12,7 +12,7 @@
             <div class="order__block">
                 <div class="order_items">
                     <div class="title">Оплата</div>
-                    <p class="payment-amount">К оплате {{ bouquet_amount }} руб.</p>
+                    <p class="payment-amount">К оплате {{ order_cost }} руб.</p>
                     <form action="{% url 'process_payment' %}" method="post" class="order__form orderStep_form">
                         {% csrf_token %}
                         <div class="order__form_messages">

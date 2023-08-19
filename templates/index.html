@@ -24,27 +24,20 @@
 			<div class="recommended p100">
 				<div class="title">Рекомендуем</div>
 				<div class="recommended__elems ficb">
-					<a href="{% url 'order' %}" class="recommended__block recommended__block_first">
-						<div class="recommended__block_elems ficb">
-							<span class="recommended__block_intro">Летнее утро</span>
-							<span class="recommended__block_price">3 600 руб</span>
+					<form class="recommended__elems ficb recommended__elems_first" style="justify-content: left !important;" method="post" action="{% url 'card' %}">
+						{% csrf_token %}
+						{% for bouquet in bouquets %}
+						<div class="recommended__block" style="flex-direction: column !important;">
+							<button value="{{ bouquet.pk }}" name="select_bouquet"
+									style="background: url({{ bouquet.image.url }}) no-repeat center bottom / cover; width: 100%; height: 100%; border: 0px;">
+							</button>
+								<div class="recommended__block_elems ficb">
+									<span class="recommended__block_intro">{{ bouquet.name }}</span>
+									<span class="recommended__block_price">{{ bouquet.price }} руб</span>
+								</div>
 						</div>
-					</a>
-
-					<a href="{% url 'order' %}" class="recommended__block recommended__block_sec">
-						<div class="recommended__block_elems ficb">
-							<span class="recommended__block_intro">Зимняя сказка</span>
-							<span class="recommended__block_price">4 100 руб</span>
-						</div>
-					</a>
-
-					<a href="{% url 'order' %}" class="recommended__block recommended__block_thr">
-						<div class="recommended__block_elems ficb">
-							<span class="recommended__block_intro">Нежный</span>
-							<span class="recommended__block_price">2 900 руб</span>
-						</div>
-					</a>
-
+						{% endfor %}
+					</form>
 				</div>
 				<button class="btn recommended__btn" onclick="window.location.href='{% url 'catalog' %}'">Показать всю коллекцию</button>
 
