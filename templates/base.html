@@ -16,15 +16,28 @@
 				<nav>
 					<ul class="menu ficc">
 						<li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
-						<li class="menu__item"><a href="{% url 'card' %}" class="menu__item_link">Рекомендации</a></li>
-						<li class="menu__item"><a href="{% url 'consultation' %}" class="menu__item_link">Контакты</a></li>
+						<li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+						<li class="menu__item"><a href="{% url 'contacts' %}" class="menu__item_link">Контакты</a></li>
 					</ul>
 				</nav>
 			</div>
 		</div>
 	</header>
-{% block content %}
-{% endblock %}
+	{% block content %}
+	{% endblock %}
+	<section id="consultation">
+		<div class="container">
+			<div class="consultation">
+				<div class="title consultation__title">Оставьте заявку на консультацию</div>
+				<form method="post" action="{% url 'consultation_ok' %}" class="consultation__form">
+					{% csrf_token %}
+					<input type="text" name="fname" class="consultation__form_input" placeholder="Введите Имя" required>
+					<input type="text" name="tel" class="consultation__form_input" placeholder="+ 7 (999) 000 00 00" required>
+					<button type="submit" class="consultation__form_btn">Отправить</button>
+				</form>
+			</div>
+		</div>
+	</section>
 	<footer id="footer">
 		<div class="container">
 			<div class="footer">
@@ -32,16 +45,15 @@
 				<nav>
 					<ul class="menu footer__menu ficc">
 						<li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
-						<li class="menu__item"><a href="{% url 'card' %}" class="menu__item_link">Рекомендации</a></li>
-						<li class="menu__item"><a href="{% url 'consultation' %}" class="menu__item_link">Контакты</a></li>
+						<li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+						<li class="menu__item"><a href="{% url 'contacts' %}" class="menu__item_link">Контакты</a></li>
 					</ul>
 				</nav>
 				<hr class="line"></hr>
-				<a href="#" class="footer__poli">Политика конфиденциальности</a>
+				<a href="{% url 'permited' %}" class="footer__poli">Политика конфиденциальности</a>
 				<p class="footer_cop">©️2022. FlowerShop. Все права защищены</p>
 			</div>
 		</div>
 	</footer>
-
 </body>
 </html>

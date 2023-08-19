@@ -3,7 +3,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<title>{% block title %}Flower Shop{% endblock %}</title>
+<title>{% block title %}Flower Shop - Оформление заказа{% endblock %}</title>
 	{% block content %}
 	<section id="order">
 		<div class="container">
@@ -50,7 +50,7 @@
 							<div class="order__form_line"></div>
 							<div class="order__form_btns ficb">
 								<button class="btn order__form_pay">Оплатить</button>
-								<button class="btn order__form_btn" onclick="window.location.href='{% url 'index' %}'">Назад</button>
+								<button class="btn order__form_btn" onclick="history.back();">Назад</button>
 							</div>
 						</form>
 					</div>
@@ -68,5 +68,3 @@
 			console.log(e.target.value)
 		}
 	</script>
-</body>
-</html>

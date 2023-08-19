@@ -67,12 +67,34 @@ def catalog(request):
 def card(request):
     bouquet = Bouquet.objects.get(pk=int(request.POST.get("select_bouquet")))
     request.session['bouquet_pk'] = bouquet.pk
+    request.session['bouquet_name'] = bouquet.name
     bouquet_items = BouquetItem.objects.filter(bouquet=bouquet)
     return render(request, 'card.html', {'bouquet': bouquet, 'bouquet_items': bouquet_items})
 
 
 def consultation(request):
     return render(request, 'consultation.html', {})
+
+
+def permited(request):
+    return render(request, 'permited.html', {})
+
+
+def contacts(request):
+    return render(request, 'contacts_page.html', {})
+
+
+def consultation_ok(request):
+    client_name = request.POST.get('fname')
+    phone_number = request.POST.get('tel')
+    message_to_owner = f'Клинет {client_name} просит перезвонить для консультации. \nТелефон: {phone_number}.'
+    if request.session.get('bouquet_pk'):
+        message_to_owner += f'\nВероятно по поводу букета "{request.session.get("bouquet_name")}"'
+    try:
+        bot.send_message(telegram_owner_id, message_to_owner)
+    except telegram.error.NetworkError as error:
+        return HttpResponse(f'Ошибка сайта. Повторите попытку позже. \n{error}')
+    return render(request, 'consultation_ok.html', {'client_name': client_name, 'phone_number': phone_number})
 
 
 def order(request):
@@ -96,7 +118,7 @@ def order_step(request):
     order.save()
     order.bouquet.add(bouquet)
 
-    messgae_to_owner = f'''
+    message_to_owner = f'''
         В магазине сделан заказ:
         букет: {bouquet.name},
         сумма: {order.cost},
@@ -105,7 +127,10 @@ def order_step(request):
         клиент: {client.name},
         телефон: {client.phone_number}        
     '''
-    bot.send_message(telegram_owner_id, messgae_to_owner)
+    try:
+        bot.send_message(telegram_owner_id, message_to_owner)
+    except telegram.error.NetworkError as error:
+        return HttpResponse(f'Ошибка сайта. Повторите попытку позже. \n{error}')
 
     request.session['order_pk'] = order.pk
     request.session['order_cost'] = order.cost
