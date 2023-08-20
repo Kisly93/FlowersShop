@@ -1,6 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.timezone import now
 
 
 class Color(models.TextChoices):
@@ -284,6 +285,12 @@ class Order(models.Model):
         choices=DeliveryTime.choices,
         default=DeliveryTime.URGENT,
         max_length=10,
+    )
+
+    created_datetime = models.DateTimeField(
+        'дата и время заказа',
+        default=now,
+        editable=False,
     )
 
     comment = models.TextField(

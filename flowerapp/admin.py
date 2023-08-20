@@ -89,11 +89,16 @@ class BouquetInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        'created_datetime',
+    )
+
     list_display = (
         'client',
         'bouquets',
         'cost',
         'address',
+        'created_datetime',
         'delivery_time',
         'status',
         'payed',
@@ -109,6 +114,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_filter = [
         'status',
+        'delivery_time',
     ]
 
 
