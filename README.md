@@ -3,6 +3,8 @@
 
 Внешний вид сайта
 
+![FlowersShop-main](https://github.com/Kisly93/FlowersShop/assets/111083714/4b851633-782e-4257-9faf-e4d5b500a821)
+
 
 ## Установка
 
@@ -32,14 +34,14 @@ python -m venv venv
 и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`.
 
 Требуемые переменные:
-- `TELEGRAM_TOKEN` - 'токен Вашего бота от Telegram'`. [Инструкция, как создать бота.](https://core.telegram.org/bots/features#botfather)  
+- `TELEGRAM_TOKEN` - токен Вашего бота от Telegram. [Инструкция, как создать бота.](https://core.telegram.org/bots/features#botfather)  
 - `TELEGRAM_OWNER_ID` - ваш личный ID от Telegram (выглядит как 123456789). Узнать можно следующим образом:  
 Добавьте в список контактов бота `@MyTelegramID_bot`.  
 Начните с ним диалог командой `/start`, в ответном сообщении вы узнаете цифры идентификатора.  
 Можете использовать также бота `@GetMyIDBot` или `@my_id_bot` для этой же цели.  
 
 
-- `SECRET_KEY=` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
+- `SECRET_KEY` - секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
    Получить секретный ключ Django:
 ```shell
 python
@@ -47,19 +49,19 @@ python
 >>> get_random_secret_key()
 ```
 - `STRIPE_API_KEY` - API-ключ, [полученный из платежной системы STRIPE.](https://stripe.com/docs/keys#create-api-secret-key)
-- `DEBUG` — дебаг-режим. Поставьте True, чтобы увидеть отладочную информацию в случае ошибки.
+- `DEBUG` - режим отладки. Поставьте True, чтобы увидеть отладочную информацию в случае ошибки.
 Выключается значением `False`.
-- `ALLOWED_HOSTS` — по умолчанию: localhost, 127.0.0.1. [документация Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts).
+- `ALLOWED_HOSTS` - по умолчанию: localhost, 127.0.0.1. [документация Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts).
 - `STATIC_ROOT` - папка для сбора статики сайта при размещении на сервере, например "assets". Нельзя задавать "static".  
-- `CSRF_TRUSTED_ORIGINS = http://subdomen.domen.com` - домен/субдомен сайта.  
+- `CSRF_TRUSTED_ORIGINS=http://subdomen.domen.com` - домен/субдомен сайта.  
 
 Для запуска проекта следующие настройки менять не требуется, значения проставлены для деплоя.  
-- `SECURE_HSTS_SECONDS = 10`  
-- `SESSION_COOKIE_SECURE = True`  
-- `CSRF_COOKIE_SECURE = True`  
-- `SECURE_HSTS_PRELOAD = True`  
-- `SECURE_HSTS_INCLUDE_SUBDOMAINS = True`  
-- `SECURE_SSL_REDIRECT = True`  
+- `SECURE_HSTS_SECONDS=10`  
+- `SESSION_COOKIE_SECURE=True`  
+- `CSRF_COOKIE_SECURE=True`  
+- `SECURE_HSTS_PRELOAD=True`  
+- `SECURE_HSTS_INCLUDE_SUBDOMAINS=True`  
+- `SECURE_SSL_REDIRECT=True`  
 [документация по настройкам Django Deployment checklist](https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/).  
 
 
@@ -80,8 +82,10 @@ python
 
 
 Основной вид административной панели в разделе "Заказы":  
+![Orders](https://github.com/Kisly93/FlowersShop/assets/111083714/db7b6b72-3e61-461d-9717-e6f02ff71d8d)
 
 Основной вид административной панели в разделе "Букеты":
+![Bouquets](https://github.com/Kisly93/FlowersShop/assets/111083714/c6b8f2ca-98f1-4dfe-845c-43d7066da0c8)
 
 
 ## Цели проекта
