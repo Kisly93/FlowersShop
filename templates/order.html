@@ -14,15 +14,16 @@
 						<form method="post" action="{% url 'order-step' %}" class="order__form">
 							{% csrf_token %}
 							<div class="order__form_block ficb">
-								<input type="text" name="fname" class="order__form_input" style="margin-right: 30px; width: 100%;" placeholder="Введите Имя" required>
-								<input type="text" name="tel" class="order__form_input" style="width: 100%;" placeholder="+ 7 (999) 000 00 00" required>
+								<input type="text" value="{{ fname }}" name="fname" class="order__form_input" style="margin-right: 30px; width: 100%;" placeholder="Введите Имя" required>
+								<input type="text" value="{{ tel }}" name="tel" class="order__form_input" style="width: 100%;" placeholder="+ 7 (999) 000 00 00" required>
 							</div>
+							<h3>{{ phone_not_valid }}</h3>
 							<div class="order__form_block ficb" >
-								<input type="text" name="adress" class="order__form_input" style="width: 100%;" placeholder="Адрес доставки" required>
+								<input type="text" value="{{ adress }}" name="adress" class="order__form_input" style="width: 100%;" placeholder="Адрес доставки" required>
 							</div>
 							<div class="order__form_btns fic" style="justify-content: center;">
 								<div class="order__form_radioBlock ">
-									<input type="radio" name="orderTime" id="radio1" value="URGENT" class="order__form_radio" />
+									<input type="radio" name="orderTime" id="radio1" value="URGENT" class="order__form_radio" checked />
 									<label for="radio1" class="radioLable">Как можно скорее</label>
 								</div>
 								<div class="order__form_radioBlock">
