@@ -1,13 +1,13 @@
 import random
 import telegram
-
-from django.shortcuts import render
-from phonenumber_field.phonenumber import PhoneNumber
-from django.http import HttpResponse
-from .models import Bouquet, BouquetItem, Order, Client
+import phonenumbers
 import stripe
+
+from django.http import HttpResponse
 from django.shortcuts import render
-from django.http import JsonResponse
+from .models import Bouquet, BouquetItem, Order, Client
+
+from phonenumber_field.phonenumber import PhoneNumber
 from environs import Env
 
 
@@ -22,10 +22,9 @@ def process_payment(request):
         email = request.POST.get('mail', '')
         payment_success = False
         payment_failed = False
-
+        order_cost = request.session.get('order_cost', 0)
         try:
-            order_cost = request.session.get('order_cost', 0)
-            charge = stripe.Charge.create(
+            stripe.Charge.create(
                 amount=order_cost * 100,
                 currency="usd",
                 source="tok_visa",  # Используем тестовый токен
@@ -33,15 +32,15 @@ def process_payment(request):
                 receipt_email=email,
             )
             payment_success = True
-        except stripe.error.CardError as e:
+        except stripe.error.CardError:
             payment_failed = True
-        except stripe.error.StripeError as e:
+        except stripe.error.StripeError:
             payment_failed = True
 
         if payment_success:
-            order = Order.objects.get(pk=request.session.get('order_pk', 0))
-            order.payed = True
-            order.save()
+            new_order = Order.objects.get(pk=request.session.get('order_pk', 0))
+            new_order.payed = True
+            new_order.save()
 
         context = {
             'payment_success': payment_success,
@@ -72,10 +71,6 @@ def card(request):
     return render(request, 'card.html', {'bouquet': bouquet, 'bouquet_items': bouquet_items})
 
 
-def consultation(request):
-    return render(request, 'consultation.html', {})
-
-
 def permited(request):
     return render(request, 'permited.html', {})
 
@@ -84,9 +79,23 @@ def contacts(request):
     return render(request, 'contacts_page.html', {})
 
 
+def consultation(request):
+    return render(request, 'consultation.html', {})
+
+
 def consultation_ok(request):
+    check_result, serialized_phone = check_phone(request)
+    if not check_result:
+        return render(request, 'consultation.html',
+            {
+                'phone_not_valid': serialized_phone,
+                'fname': request.POST.get('fname'),
+                'tel': request.POST.get('tel'),
+            }
+        )
+
     client_name = request.POST.get('fname')
-    phone_number = request.POST.get('tel')
+    phone_number = "".join(request.POST.get('tel').split())
     message_to_owner = f'Клинет {client_name} просит перезвонить для консультации. \nТелефон: {phone_number}.'
     if request.session.get('bouquet_pk'):
         message_to_owner += f'\nВероятно по поводу букета "{request.session.get("bouquet_name")}"'
@@ -101,29 +110,46 @@ def order(request):
     return render(request, 'order.html', {'bouquet_pk': request.session.get('bouquet_pk', 0)})
 
 
-def order_step(request):
+def check_phone(request):
     serialized_phone = PhoneNumber.from_string(request.POST.get('tel'), region='RU').as_e164
+    if not phonenumbers.is_valid_number(phonenumbers.parse(serialized_phone)):
+        return False, f'Номер телефона {serialized_phone} не является корректным!'
+    return True, serialized_phone
+
+
+def order_step(request):
+    check_result, serialized_phone = check_phone(request)
+    if not check_result:
+        return render(request, 'order.html',
+            {
+                'phone_not_valid': serialized_phone,
+                'fname': request.POST.get('fname'),
+                'tel': request.POST.get('tel'),
+                'adress': request.POST.get('adress'),
+            }
+        )
+
     client, client_created = Client.objects.get_or_create(
         phone_number=serialized_phone,
         defaults={'name': request.POST.get('fname')},
     )
 
     bouquet = Bouquet.objects.get(pk=request.session.get('bouquet_pk', 0))
-    order = Order(
+    new_order = Order(
         client=client,
         address=request.POST.get('adress'),
         delivery_time=request.POST.get('orderTime'),
         cost=bouquet.price,
     )
-    order.save()
-    order.bouquet.add(bouquet)
+    new_order.save()
+    new_order.bouquet.add(bouquet)
 
     message_to_owner = f'''
         В магазине сделан заказ:
         букет: {bouquet.name},
-        сумма: {order.cost},
-        адрес доставки: {order.address},
-        время доставки: {Order.DeliveryTime(order.delivery_time).label},
+        сумма: {new_order.cost},
+        адрес доставки: {new_order.address},
+        время доставки: {Order.DeliveryTime(new_order.delivery_time).label},
         клиент: {client.name},
         телефон: {client.phone_number}        
     '''
@@ -132,9 +158,9 @@ def order_step(request):
     except telegram.error.NetworkError as error:
         return HttpResponse(f'Ошибка сайта. Повторите попытку позже. \n{error}')
 
-    request.session['order_pk'] = order.pk
-    request.session['order_cost'] = order.cost
-    return render(request, 'order-step.html', {'order_cost': order.cost})
+    request.session['order_pk'] = new_order.pk
+    request.session['order_cost'] = new_order.cost
+    return render(request, 'order-step.html', {'order_cost': new_order.cost})
 
 
 def quiz(request):
@@ -177,5 +203,7 @@ def result(request):
             selected_bouquets = list(Bouquet.objects.all())
             random_selected_bouquet = random.choice(selected_bouquets)
 
+    request.session['bouquet_pk'] = random_selected_bouquet.pk
+    request.session['bouquet_name'] = random_selected_bouquet.name
     bouquet_items = BouquetItem.objects.filter(bouquet=random_selected_bouquet)
     return render(request, 'result.html', {'bouquet': random_selected_bouquet, 'bouquet_items': bouquet_items})
