@@ -30,7 +30,7 @@
 					document.addEventListener("DOMContentLoaded", function() {
 						const showMoreBtn = document.getElementById("showMoreBtn");
 						const bouquets = document.querySelectorAll(".recommended__block");
-						let visibleBouquets = 6;
+						let visibleBouquets = 3;
 
 						function updateVisibility() {
 							bouquets.forEach((bouquet, index) => {
@@ -51,7 +51,7 @@
 						updateVisibility();
 
 						showMoreBtn.addEventListener("click", function() {
-							visibleBouquets += 6;
+							visibleBouquets += 3;
 							updateVisibility();
 						});
 					});
