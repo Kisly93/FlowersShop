@@ -10,7 +10,7 @@
 			<div class="catalog">
 				<div class="title">Все букеты</div>
 				<div class="catalog__block">
-					<form class="recommended__elems ficb recommended__elems_first" style="flex-wrap: wrap-reverse; justify-content: left !important;" method="post" action="{% url 'card' %}">
+					<form class="recommended__elems ficb recommended__elems_first" style="flex-wrap: wrap; justify-content: left !important;" method="post" action="{% url 'card' %}">
 						{% csrf_token %}
 						{% for bouquet in bouquets %}
 						<div class="recommended__block" style="flex-direction: column !important;">
@@ -24,7 +24,38 @@
 						</div>
 						{% endfor %}
 					</form>
-					<button class="btn largeBtn catalog__btn">Показать ещё</button>
+					<button class="btn largeBtn catalog__btn" id="showMoreBtn">Показать ещё</button>
+
+					<script>
+					document.addEventListener("DOMContentLoaded", function() {
+						const showMoreBtn = document.getElementById("showMoreBtn");
+						const bouquets = document.querySelectorAll(".recommended__block");
+						let visibleBouquets = 6;
+
+						function updateVisibility() {
+							bouquets.forEach((bouquet, index) => {
+								if (index < visibleBouquets) {
+									bouquet.style.display = "block";
+								} else {
+									bouquet.style.display = "none";
+								}
+							});
+
+							if (visibleBouquets >= bouquets.length) {
+								showMoreBtn.style.display = "none";
+							} else {
+								showMoreBtn.style.display = "block";
+							}
+						}
+
+						updateVisibility();
+
+						showMoreBtn.addEventListener("click", function() {
+							visibleBouquets += 6;
+							updateVisibility();
+						});
+					});
+					</script>
 				</div>
 			</div>
 		</div>
