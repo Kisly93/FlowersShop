@@ -1,4 +1,4 @@
-Django~=3.2.*
+Django==3.2.*
 environs[django]==9.3.*
 phonenumberslite==8.13.*
 django-phonenumber-field==7.1.*
